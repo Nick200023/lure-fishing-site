@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路亚钓鱼 - 装备库（可用版本）</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        .gear-card { transition: all 0.3s ease; cursor: pointer; }
+        .gear-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <span style="color: #16a34a;">🐟</span>
+                    <span class="text-lg font-bold text-gray-900">路亚钓鱼</span>
+                </a>
+                <a href="index.html" style="color: #16a34a;" class="font-medium">← 返回首页</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="bg-gradient-to-br from-green-700 via-green-600 to-teal-600 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">装备评测库</h1>
+            <p class="text-green-100 text-lg">真实评测，帮你选对装备不花冤枉钱</p>
+        </div>
+    </section>
+
+    <section class="py-6 bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="filterCategory('all')" class="px-4 py-2 bg-green-600 text-white rounded-lg font-medium">全部</button>
+                    <button onclick="filterCategory('rod')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium">鱼竿</button>
+                    <button onclick="filterCategory('reel')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium">鱼轮</button>
+                    <button onclick="filterCategory('lure')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium">假饵</button>
+                    <button onclick="filterCategory('accessory')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium">配件</button>
+                </div>
+                <p class="text-gray-600">共 <strong style="color: #16a34a;" id="gearCount">0</strong> 款装备</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div id="gearGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+    </section>
+
+    <!-- 详情弹窗 -->
+    <div id="detailModal" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b sticky top-0 bg-white">
+                <h2 id="modalTitle" class="text-2xl font-bold text-gray-900"></h2>
+                <button onclick="closeModal()" style="font-size: 28px; line-height: 1; color: #9ca3af;" class="hover:text-gray-600">&times;</button>
+            </div>
+            <div id="modalContent" class="p-6"></div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-900 text-gray-300 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">&copy; 2026 路亚钓鱼网。All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 装备数据
+        var gearDatabase = [
+            { id: 1, name: 'Shimano 禧玛诺 EXP', category: 'rod', price: 1299, rating: 4.8, reviews: 356, specs: {'长度': '1.98m', '调性': 'ML', '重量': '95g'}, pros: ['超高灵敏度', '轻量化设计'], cons: ['价格偏高', '新手不易上手'] },
+            { id: 2, name: '海伯 战神系列', category: 'rod', price: 358, rating: 4.5, reviews: 289, specs: {'长度': '2.13m', '调性': 'M', '重量': '125g'}, pros: ['性价比极高', '皮实耐用'], cons: ['灵敏度一般', '重量偏大'] },
+            { id: 3, name: 'Daiwa 达亿瓦 TATULA', category: 'reel', price: 899, rating: 4.7, reviews: 423, specs: {'类型': '水滴轮', '速比': '6.3:1', '重量': '205g'}, pros: ['T 翼系统防炸线', '性价比高'], cons: ['满载时略重', '噪音稍大'] },
+            { id: 4, name: 'Megabass VISION 110', category: 'lure', price: 168, rating: 4.9, reviews: 567, specs: {'类型': '米诺', '长度': '110mm', '重量': '14g'}, pros: ['经典泳姿', '鲈鱼杀手'], cons: ['价格偏高', '容易挂底'] },
+            { id: 5, name: 'Abu Garcia REVO', category: 'reel', price: 1599, rating: 4.8, reviews: 234, specs: {'类型': '水滴轮', '速比': '7.3:1', '重量': '184g'}, pros: ['磁力刹车精准', '高速比'], cons: ['价格高', '维护成本高'] },
+            { id: 6, name: '亮片套装', category: 'lure', price: 59, rating: 4.5, reviews: 789, specs: {'类型': '亮片', '重量': '3.5-10g', '数量': '10 枚'}, pros: ['万能饵', '超便宜'], cons: ['易挂底', '目标鱼有限'] },
+            { id: 7, name: '光威 赤刃', category: 'rod', price: 199, rating: 4.3, reviews: 567, specs: {'长度': '1.80m', '调性': 'ML', '重量': '110g'}, pros: ['超低价', '国产良心'], cons: ['做工一般', '灵敏度低'] },
+            { id: 8, name: 'Shimano 纺车轮 NASCI', category: 'reel', price: 699, rating: 4.7, reviews: 289, specs: {'类型': '纺车轮', '速比': '5.2:1', '重量': '240g'}, pros: ['超级顺滑', '耐用'], cons: ['速比低', '不适合精细操作'] },
+            { id: 9, name: '软饵套装', category: 'lure', price: 39, rating: 4.4, reviews: 634, specs: {'类型': '软饵', '长度': '5-8cm', '数量': '20 尾'}, pros: ['便宜', '种类多'], cons: ['易损耗', '需要配铅'] },
+            { id: 10, name: 'OWNER 钩子套装', category: 'accessory', price: 89, rating: 4.6, reviews: 512, specs: {'数量': '50 枚', '材质': '高碳钢'}, pros: ['超级锋利', '性价比高'], cons: ['容易生锈', '小号偏软'] },
+            { id: 11, name: 'Sunline 鱼线', category: 'accessory', price: 68, rating: 4.7, reviews: 423, specs: {'类型': 'PE 线', '号数': '1.5 号', '长度': '150m'}, pros: ['日本品牌', '质量稳定'], cons: ['价格中等', '假货多'] },
+            { id: 12, name: 'VIB 金属振动饵', category: 'lure', price: 89, rating: 4.6, reviews: 345, specs: {'类型': 'VIB', '重量': '10g', '数量': '3 枚'}, pros: ['全水层', '诱鱼强'], cons: ['易挂底', '操作单一'] }
+        ];
+
+        var currentCategory = 'all';
+
+        function getCategoryName(cat) {
+            var names = { rod: '鱼竿', reel: '鱼轮', lure: '假饵', accessory: '配件' };
+            return names[cat] || cat;
+        }
+
+        function renderGear() {
+            var grid = document.getElementById('gearGrid');
+            var countEl = document.getElementById('gearCount');
+            var filtered = currentCategory === 'all' ? gearDatabase : gearDatabase.filter(function(g) { return g.category === currentCategory; });
+            
+            countEl.innerHTML = '<strong style="color: #16a34a;">' + filtered.length + '</strong>';
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-16"><p class="text-gray-500 text-lg">该分类下暂无装备</p></div>';
+                return;
+            }
+            
+            var html = '';
+            for (var i = 0; i < filtered.length; i++) {
+                var gear = filtered[i];
+                html += '<div class="bg-white rounded-xl overflow-hidden shadow-lg gear-card" onclick="viewDetail(' + gear.id + ')">' +
+                    '<div class="h-40 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">📦</div>' +
+                    '<div class="p-5">' +
+                    '<div class="mb-2">' +
+                    '<h3 class="text-lg font-bold text-gray-900">' + gear.name + '</h3>' +
+                    '<p class="text-sm text-gray-500">' + getCategoryName(gear.category) + '</p>' +
+                    '</div>' +
+                    '<div class="flex items-center mb-3">' +
+                    '<span style="color: #eab308;">★</span>' +
+                    '<span class="font-medium">' + gear.rating + '</span>' +
+                    '<span class="text-gray-500 text-sm ml-1">(' + gear.reviews + '条)</span>' +
+                    '</div>' +
+                    '<div class="flex items-center justify-between pt-3 border-t">' +
+                    '<span class="text-2xl font-bold" style="color: #16a34a;">¥' + gear.price + '</span>' +
+                    '<button onclick="viewDetail(' + gear.id + ')" class="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-medium transition text-sm">查看详情</button>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            }
+            grid.innerHTML = html;
+        }
+
+        function filterCategory(category) {
+            currentCategory = category;
+            var buttons = document.querySelectorAll('button[onclick^="filterCategory"]');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].className = 'px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium';
+            }
+            event.target.className = 'px-4 py-2 bg-green-600 text-white rounded-lg font-medium';
+            renderGear();
+        }
+
+        function viewDetail(id) {
+            var gear = null;
+            for (var i = 0; i < gearDatabase.length; i++) {
+                if (gearDatabase[i].id === id) {
+                    gear = gearDatabase[i];
+                    break;
+                }
+            }
+            
+            if (!gear) return;
+            
+            var specsHtml = '';
+            for (var key in gear.specs) {
+                specsHtml += '<div class="flex justify-between py-2 border-b"><span class="text-gray-500">' + key + '</span><span class="font-medium">' + gear.specs[key] + '</span></div>';
+            }
+            
+            var prosHtml = '';
+            for (var i = 0; i < gear.pros.length; i++) {
+                prosHtml += '<li class="text-green-700 flex items-center"><span style="color: #16a34a; margin-right: 8px;">✓</span>' + gear.pros[i] + '</li>';
+            }
+            
+            var consHtml = '';
+            for (var i = 0; i < gear.cons.length; i++) {
+                consHtml += '<li class="text-red-700 flex items-center"><span style="color: #dc2626; margin-right: 8px;">✗</span>' + gear.cons[i] + '</li>';
+            }
+            
+            document.getElementById('modalTitle').textContent = gear.name;
+            document.getElementById('modalContent').innerHTML = 
+                '<div class="space-y-6">' +
+                '<div class="flex items-center justify-between">' +
+                '<div>' +
+                '<p class="text-sm text-gray-500">' + getCategoryName(gear.category) + '</p>' +
+                '<p class="text-3xl font-bold" style="color: #16a34a;">¥' + gear.price + '</p>' +
+                '</div>' +
+                '<div class="text-right">' +
+                '<div class="flex items-center">' +
+                '<span style="color: #eab308; font-size: 20px;">★</span>' +
+                '<span class="text-2xl font-bold ml-1">' + gear.rating + '</span>' +
+                '</div>' +
+                '<p class="text-sm text-gray-500">' + gear.reviews + '条评价</p>' +
+                '</div>' +
+                '</div>' +
+                '<div>' +
+                '<h3 class="font-bold text-lg mb-3">规格参数</h3>' +
+                '<div class="bg-gray-50 rounded-lg p-4">' + specsHtml + '</div>' +
+                '</div>' +
+                '<div class="grid md:grid-cols-2 gap-6">' +
+                '<div>' +
+                '<h3 class="font-bold text-lg mb-3" style="color: #16a34a;">优点</h3>' +
+                '<ul class="space-y-2">' + prosHtml + '</ul>' +
+                '</div>' +
+                '<div>' +
+                '<h3 class="font-bold text-lg mb-3" style="color: #dc2626;">缺点</h3>' +
+                '<ul class="space-y-2">' + consHtml + '</ul>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+            
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 键盘 ESC 关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // 初始化
+        renderGear();
+    </script>
+</body>
+</html>
