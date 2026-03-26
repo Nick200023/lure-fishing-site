@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路亚钓鱼 - 装备库</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        .gear-card { transition: all 0.3s ease; }
+        .gear-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); cursor: pointer; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <i data-lucide="fish" class="w-6 h-6 text-green-600"></i>
+                    <span class="text-lg font-bold text-gray-900">路亚钓鱼</span>
+                </a>
+                <a href="index.html" class="text-green-600 hover:text-green-700 font-medium">← 返回首页</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="bg-gradient-to-br from-green-700 via-green-600 to-teal-600 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">装备评测库</h1>
+            <p class="text-green-100 text-lg">真实评测，帮你选对装备不花冤枉钱</p>
+        </div>
+    </section>
+
+    <!-- 分类筛选 -->
+    <section class="py-6 bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="filterCategory('all')" class="category-btn active px-4 py-2 bg-green-600 text-white rounded-lg font-medium transition">全部</button>
+                    <button onclick="filterCategory('rod')" class="category-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition">鱼竿</button>
+                    <button onclick="filterCategory('reel')" class="category-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition">鱼轮</button>
+                    <button onclick="filterCategory('lure')" class="category-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition">假饵</button>
+                    <button onclick="filterCategory('accessory')" class="category-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition">配件</button>
+                </div>
+                <p class="text-gray-600">共 <span id="gearCount" class="font-bold text-green-600 text-lg">0</span> 款装备</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 装备列表 -->
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div id="gearGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 装备卡片由 JS 生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-gray-300 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">&copy; 2026 路亚钓鱼网。All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 内置装备数据
+        const gearDatabase = [
+            {
+                id: 1,
+                name: 'Shimano 禧玛诺 EXP',
+                category: 'rod',
+                price: 1299,
+                rating: 4.8,
+                reviews: 356,
+                image: 'from-gray-300 to-gray-400',
+                specs: { '长度': '1.98m', '调性': 'ML', '重量': '95g', '饵重': '3-14g' },
+                scores: { 灵敏度：95, 耐用性：90, 性价比：75, 外观：92 },
+                pros: ['超高灵敏度', '轻量化设计', '导环质量优秀'],
+                cons: ['价格偏高', '新手不易上手']
+            },
+            {
+                id: 2,
+                name: '海伯 战神系列',
+                category: 'rod',
+                price: 358,
+                rating: 4.5,
+                reviews: 289,
+                image: 'from-red-300 to-red-400',
+                specs: { '长度': '2.13m', '调性': 'M', '重量': '125g', '饵重': '7-28g' },
+                scores: { 灵敏度：80, 耐用性：92, 性价比：95, 外观：85 },
+                pros: ['性价比极高', '皮实耐用', '适合新手'],
+                cons: ['灵敏度一般', '重量偏大']
+            },
+            {
+                id: 3,
+                name: 'Daiwa 达亿瓦 TATULA',
+                category: 'reel',
+                price: 899,
+                rating: 4.7,
+                reviews: 423,
+                image: 'from-blue-300 to-blue-400',
+                specs: { '类型': '水滴轮', '速比': '6.3:1', '重量': '205g', '线容量': '0.35mm-100m' },
+                scores: { 抛投性：92, 耐用性：88, 性价比：85, 刹车系统：90 },
+                pros: ['T 翼系统防炸线', '性价比高', '适合新手'],
+                cons: ['满载时略重', '噪音稍大']
+            },
+            {
+                id: 4,
+                name: 'Megabass VISION 110',
+                category: 'lure',
+                price: 168,
+                rating: 4.9,
+                reviews: 567,
+                image: 'from-green-300 to-green-400',
+                specs: { '类型': '米诺', '长度': '110mm', '重量': '14g', '潜深': '0.8-1.2m' },
+                scores: { 泳姿：98, 耐用性：85, 性价比：70, 诱鱼效果：96 },
+                pros: ['经典泳姿', '鲈鱼杀手', '品质稳定'],
+                cons: ['价格偏高', '容易挂底']
+            },
+            {
+                id: 5,
+                name: 'Abu Garcia REVO',
+                category: 'reel',
+                price: 1599,
+                rating: 4.8,
+                reviews: 234,
+                image: 'from-purple-300 to-purple-400',
+                specs: { '类型': '水滴轮', '速比': '7.3:1', '重量': '184g', '轴承': '10+1' },
+                scores: { 抛投性：94, 耐用性：93, 性价比：72, 刹车系统：96 },
+                pros: ['磁力刹车精准', '高速比', '做工精细'],
+                cons: ['价格高', '维护成本高']
+            },
+            {
+                id: 6,
+                name: '亮片套装',
+                category: 'lure',
+                price: 59,
+                rating: 4.5,
+                reviews: 789,
+                image: 'from-yellow-300 to-yellow-400',
+                specs: { '类型': '亮片', '重量': '3.5-10g', '数量': '10 枚', '颜色': '混色' },
+                scores: { 泳姿：85, 耐用性：95, 性价比：98, 诱鱼效果：88 },
+                pros: ['万能饵', '超便宜', '新手必备'],
+                cons: ['易挂底', '目标鱼有限']
+            },
+            {
+                id: 7,
+                name: '光威 赤刃',
+                category: 'rod',
+                price: 199,
+                rating: 4.3,
+                reviews: 567,
+                image: 'from-orange-300 to-orange-400',
+                specs: { '长度': '1.80m', '调性': 'ML', '重量': '110g' },
+                scores: { 灵敏度：75, 耐用性：88, 性价比：98 },
+                pros: ['超低价', '国产良心', '新手首选'],
+                cons: ['做工一般', '灵敏度低']
+            },
+            {
+                id: 8,
+                name: 'Shimano 纺车轮 NASCI',
+                category: 'reel',
+                price: 699,
+                rating: 4.7,
+                reviews: 289,
+                image: 'from-silver-300 to-silver-400',
+                specs: { '类型': '纺车轮', '速比': '5.2:1', '重量': '240g' },
+                scores: { 抛投性：88, 耐用性：92, 性价比：85, 顺滑度：94 },
+                pros: ['超级顺滑', '耐用', '适合远投'],
+                cons: ['速比低', '不适合精细操作']
+            },
+            {
+                id: 9,
+                name: '软饵套装',
+                category: 'lure',
+                price: 39,
+                rating: 4.4,
+                reviews: 634,
+                image: 'from-pink-300 to-pink-400',
+                specs: { '类型': '软饵', '长度': '5-8cm', '数量': '20 尾' },
+                scores: { 泳姿：88, 耐用性：75, 性价比：95 },
+                pros: ['便宜', '种类多', '底层搜索'],
+                cons: ['易损耗', '需要配铅']
+            },
+            {
+                id: 10,
+                name: 'OWNER 钩子套装',
+                category: 'accessory',
+                price: 89,
+                rating: 4.6,
+                reviews: 512,
+                image: 'from-teal-300 to-teal-400',
+                specs: { '数量': '50 枚', '型号': '混合装', '材质': '高碳钢' },
+                scores: { 锋利度：94, 耐用性：88, 性价比：92 },
+                pros: ['超级锋利', '性价比高', '型号齐全'],
+                cons: ['容易生锈', '小号偏软']
+            },
+            {
+                id: 11,
+                name: 'Sunline 鱼线',
+                category: 'accessory',
+                price: 68,
+                rating: 4.7,
+                reviews: 423,
+                image: 'from-emerald-300 to-emerald-400',
+                specs: { '类型': 'PE 线', '号数': '1.5 号', '长度': '150m' },
+                scores: { 强度：92, 耐用性：90, 性价比：88 },
+                pros: ['日本品牌', '质量稳定', '抛投顺'],
+                cons: ['价格中等', '假货多']
+            },
+            {
+                id: 12,
+                name: 'VIB 金属振动饵',
+                category: 'lure',
+                price: 89,
+                rating: 4.6,
+                reviews: 345,
+                image: 'from-indigo-300 to-indigo-400',
+                specs: { '类型': 'VIB', '重量': '10g', '数量': '3 枚' },
+                scores: { 泳姿：92, 耐用性：90, 诱鱼效果：92 },
+                pros: ['全水层', '诱鱼强', '远投好'],
+                cons: ['易挂底', '操作单一']
+            }
+        ];
+
+        let currentCategory = 'all';
+
+        function renderGear(category = 'all') {
+            const grid = document.getElementById('gearGrid');
+            const countEl = document.getElementById('gearCount');
+            const filtered = category === 'all' ? gearDatabase : gearDatabase.filter(g => g.category === category);
+            
+            currentCategory = category;
+            countEl.textContent = filtered.length;
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <i data-lucide="inbox" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
+                        <p class="text-gray-500 text-lg">该分类下暂无装备</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+            
+            grid.innerHTML = filtered.map(gear => `
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg gear-card" onclick="viewDetail(${gear.id})">
+                    <div class="h-40 bg-gradient-to-br ${gear.image} flex items-center justify-center">
+                        <i data-lucide="package" class="w-16 h-16 text-white opacity-60"></i>
+                    </div>
+                    <div class="p-5">
+                        <div class="mb-2">
+                            <h3 class="text-lg font-bold text-gray-900">${gear.name}</h3>
+                            <p class="text-sm text-gray-500">${getCategoryName(gear.category)}</p>
+                        </div>
+                        
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1"></i>
+                            <span class="font-medium">${gear.rating}</span>
+                            <span class="text-gray-500 text-sm ml-1">(${gear.reviews}条)</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-3 border-t">
+                            <span class="text-2xl font-bold text-green-600">¥${gear.price}</span>
+                            <button onclick="event.stopPropagation(); viewDetail(${gear.id})" class="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-medium transition text-sm">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        function getCategoryName(cat) {
+            return { rod: '鱼竿', reel: '鱼轮', lure: '假饵', accessory: '配件' }[cat];
+        }
+
+        function filterCategory(category) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.className = 'category-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition';
+            });
+            event.target.className = 'category-btn active px-4 py-2 bg-green-600 text-white rounded-lg font-medium transition';
+            renderGear(category);
+        }
+
+        function viewDetail(id) {
+            const gear = gearDatabase.find(g => g.id === id);
+            const specsHtml = Object.entries(gear.specs).map(([k, v]) => `<div><span class="text-gray-500">${k}:</span> <span class="font-medium">${v}</span></div>`).join('');
+            const prosHtml = gear.pros.map(p => `<li class="text-green-700">✓ ${p}</li>`).join('');
+            const consHtml = gear.cons.map(c => `<li class="text-red-700">✗ ${c}</li>`).join('');
+            
+            alert(`${gear.name}\n\n分类：${getCategoryName(gear.category)}\n价格：¥${gear.price}\n评分：${gear.rating} (${gear.reviews}条)\n\n${specsHtml}\n\n优点:\n${gear.pros.join('\n')}\n\n缺点:\n${gear.cons.join('\n')}`);
+        }
+
+        // 初始化
+        renderGear();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
