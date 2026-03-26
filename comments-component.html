@@ -1,0 +1,254 @@
+<!-- 评论系统组件 - 可嵌入到任何页面 -->
+<!-- 使用方式：在需要评论的页面底部添加此组件 -->
+
+<div id="comments-section" class="bg-white rounded-2xl shadow-lg p-6 mt-8">
+    <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+        <i data-lucide="message-circle" class="w-6 h-6 mr-2 text-primary-500"></i>
+        钓友评论
+        <span class="ml-2 text-sm font-normal text-gray-500">(共 <span id="commentCount">0</span> 条评论)</span>
+    </h3>
+    
+    <!-- 评论表单 -->
+    <div class="mb-8">
+        <textarea id="commentInput" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" placeholder="分享你的钓鱼经验或装备使用心得..."></textarea>
+        <div class="flex justify-between items-center mt-4">
+            <div class="text-sm text-gray-500">
+                <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
+                请文明发言，分享真实经验
+            </div>
+            <button onclick="submitComment()" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition inline-flex items-center">
+                <i data-lucide="send" class="w-4 h-4 mr-2"></i>
+                发表评论
+            </button>
+        </div>
+    </div>
+    
+    <!-- 评论列表 -->
+    <div id="commentsList" class="space-y-6">
+        <!-- 示例评论 -->
+        <div class="border-b pb-6">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                    张
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <span class="font-bold text-gray-900">张三</span>
+                            <span class="text-xs text-gray-500 ml-2">2 小时前</span>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-500">
+                            <i data-lucide="heart" class="w-4 h-4"></i>
+                            <span class="text-xs ml-1">12</span>
+                        </button>
+                    </div>
+                    <p class="text-gray-700">千岛湖的鲈鱼密度确实高，上周去钓了 2 天，路获 5 条，最大的 52cm！推荐用亮片，中鱼率很高。</p>
+                    <div class="flex gap-2 mt-3">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">鲈鱼</span>
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">千岛湖</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="border-b pb-6">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                    李
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <span class="font-bold text-gray-900">李四</span>
+                            <span class="text-xs text-gray-500 ml-2">5 小时前</span>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-500">
+                            <i data-lucide="heart" class="w-4 h-4"></i>
+                            <span class="text-xs ml-1">8</span>
+                        </button>
+                    </div>
+                    <p class="text-gray-700">Shimano EXP 鱼竿确实不错，灵敏度超高，就是价格有点贵。预算有限的话可以考虑海伯战神，性价比很高。</p>
+                    <div class="flex gap-2 mt-3">
+                        <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">装备</span>
+                        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">鱼竿</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                    王
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <span class="font-bold text-gray-900">王五</span>
+                            <span class="text-xs text-gray-500 ml-2">昨天</span>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-500">
+                            <i data-lucide="heart" class="w-4 h-4"></i>
+                            <span class="text-xs ml-1">15</span>
+                        </button>
+                    </div>
+                    <p class="text-gray-700">丹江口的鳡鱼拉力真的爆棚！建议用 3 号 PE 线 +4000 型纺车轮，不然真的顶不住。钓点推荐大坝附近，那里结构复杂，鱼多。</p>
+                    <div class="flex gap-2 mt-3">
+                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">鳡鱼</span>
+                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">丹江口</span>
+                        <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">钓点</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载更多 -->
+    <div class="text-center mt-8">
+        <button class="text-primary-500 hover:text-primary-600 font-medium inline-flex items-center">
+            加载更多评论
+            <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+// 评论系统功能
+let comments = [];
+
+// 从 localStorage 加载评论
+function loadComments() {
+    const saved = localStorage.getItem('lureFishingComments');
+    if (saved) {
+        comments = JSON.parse(saved);
+        renderComments();
+    }
+}
+
+// 保存评论到 localStorage
+function saveComments() {
+    localStorage.setItem('lureFishingComments', JSON.stringify(comments));
+}
+
+// 渲染评论列表
+function renderComments() {
+    const list = document.getElementById('commentsList');
+    const count = document.getElementById('commentCount');
+    
+    if (!list) return;
+    
+    count.textContent = comments.length;
+    
+    if (comments.length === 0) {
+        list.innerHTML = `
+            <div class="text-center py-12">
+                <i data-lucide="message-square" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
+                <p class="text-gray-500">暂无评论，快来发表第一条评论吧！</p>
+            </div>
+        `;
+        return;
+    }
+    
+    list.innerHTML = comments.map((comment, index) => `
+        <div class="border-b pb-6">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-gradient-to-br ${getAvatarColor(comment.name)} rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                    ${comment.name.charAt(0)}
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <span class="font-bold text-gray-900">${comment.name}</span>
+                            <span class="text-xs text-gray-500 ml-2">${formatTime(comment.time)}</span>
+                        </div>
+                        <button onclick="likeComment(${index})" class="text-gray-400 hover:text-red-500 inline-flex items-center">
+                            <i data-lucide="heart" class="w-4 h-4 ${comment.likes > 0 ? 'fill-red-500 text-red-500' : ''}"></i>
+                            <span class="text-xs ml-1">${comment.likes || 0}</span>
+                        </button>
+                    </div>
+                    <p class="text-gray-700">${comment.content}</p>
+                    ${comment.tags ? `
+                        <div class="flex gap-2 mt-3">
+                            ${comment.tags.map(tag => `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    lucide.createIcons();
+}
+
+// 提交评论
+function submitComment() {
+    const input = document.getElementById('commentInput');
+    const content = input.value.trim();
+    
+    if (!content) {
+        alert('请输入评论内容');
+        return;
+    }
+    
+    const comment = {
+        id: Date.now(),
+        name: '钓友' + Math.floor(Math.random() * 1000),
+        content: content,
+        time: Date.now(),
+        likes: 0,
+        tags: []
+    };
+    
+    comments.unshift(comment);
+    saveComments();
+    renderComments();
+    
+    input.value = '';
+    alert('评论发表成功！');
+}
+
+// 点赞评论
+function likeComment(index) {
+    comments[index].likes = (comments[index].likes || 0) + 1;
+    saveComments();
+    renderComments();
+}
+
+// 获取头像颜色
+function getAvatarColor(name) {
+    const colors = [
+        'from-blue-400 to-blue-600',
+        'from-green-400 to-green-600',
+        'from-orange-400 to-orange-600',
+        'from-purple-400 to-purple-600',
+        'from-red-400 to-red-600',
+        'from-teal-400 to-teal-600'
+    ];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+}
+
+// 格式化时间
+function formatTime(timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+    
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 1) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+    if (hours < 24) return `${hours}小时前`;
+    if (days < 7) return `${days}天前`;
+    
+    return new Date(timestamp).toLocaleDateString('zh-CN');
+}
+
+// 初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadComments);
+} else {
+    loadComments();
+}
+</script>

@@ -26,6 +26,7 @@
         .gear-card { transition: all 0.3s ease; }
         .gear-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
         .rating-bar { transition: width 0.5s ease; }
+        .compare-modal { transition: all 0.3s ease; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -96,11 +97,17 @@
                         <div class="text-sm text-gray-600">选择 2-3 款装备进行详细对比</div>
                     </div>
                 </div>
-                <button onclick="openCompare()" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition inline-flex items-center">
-                    <i data-lucide="layers" class="w-5 h-5 mr-2"></i>
-                    开始对比
-                    <span class="ml-2 bg-white text-primary-600 px-2 py-0.5 rounded text-sm font-bold" id="compareCount">0</span>
-                </button>
+                <div class="flex items-center gap-4">
+                    <button onclick="clearCompare()" class="text-gray-600 hover:text-gray-800 font-medium text-sm">
+                        <i data-lucide="trash-2" class="w-4 h-4 inline mr-1"></i>
+                        清空
+                    </button>
+                    <button onclick="openCompare()" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition inline-flex items-center">
+                        <i data-lucide="layers" class="w-5 h-5 mr-2"></i>
+                        开始对比
+                        <span class="ml-2 bg-white text-primary-600 px-2 py-0.5 rounded text-sm font-bold" id="compareCount">0</span>
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -113,6 +120,36 @@
             </div>
         </div>
     </section>
+
+    <!-- 对比弹窗 -->
+    <div id="compareModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
+        <div class="min-h-screen px-4 py-8 flex items-center justify-center">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full mx-4 my-8">
+                <!-- 弹窗头部 -->
+                <div class="flex justify-between items-center p-6 border-b">
+                    <h2 class="text-2xl font-bold text-gray-900">装备对比</h2>
+                    <button onclick="closeCompare()" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <!-- 对比内容 -->
+                <div class="p-6" id="compareContent">
+                    <!-- 由 JS 动态生成 -->
+                </div>
+                
+                <!-- 弹窗底部 -->
+                <div class="flex justify-end gap-4 p-6 border-t">
+                    <button onclick="closeCompare()" class="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition">
+                        关闭
+                    </button>
+                    <button onclick="closeCompare()" class="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition">
+                        确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 页脚 -->
     <footer class="bg-gray-900 text-gray-300 py-12 mt-16">
@@ -128,93 +165,13 @@
     </footer>
 
     <!-- 装备数据 -->
+    <script src="database.js"></script>
     <script>
-        const gearData = [
-            {
-                id: 1,
-                name: 'Shimano 禧玛诺 EXP',
-                category: 'rod',
-                price: 1299,
-                rating: 4.8,
-                reviews: 356,
-                image: 'from-gray-300 to-gray-400',
-                specs: { '长度': '1.98m', '调性': 'ML', '重量': '95g', '饵重': '3-14g' },
-                scores: { 灵敏度: 95, 耐用性: 90, 性价比: 75, 外观: 92 },
-                pros: ['超高灵敏度', '轻量化设计', '导环质量优秀'],
-                cons: ['价格偏高', '新手不易上手']
-            },
-            {
-                id: 2,
-                name: 'Daiwa 达亿瓦 TATULA',
-                category: 'reel',
-                price: 899,
-                rating: 4.7,
-                reviews: 423,
-                image: 'from-blue-300 to-blue-400',
-                specs: { '类型': '水滴轮', '速比': '6.3:1', '重量': '205g', '线容量': '0.35mm-100m' },
-                scores: { 抛投性: 92, 耐用性: 88, 性价比: 85, '刹车系统': 90 },
-                pros: ['T 翼系统防炸线', '性价比高', '适合新手'],
-                cons: ['满载时略重', '噪音稍大']
-            },
-            {
-                id: 3,
-                name: 'Megabass VISION 110',
-                category: 'lure',
-                price: 168,
-                rating: 4.9,
-                reviews: 567,
-                image: 'from-green-300 to-green-400',
-                specs: { '类型': '米诺', '长度': '110mm', '重量': '14g', '潜深': '0.8-1.2m' },
-                scores: { 泳姿: 98, 耐用性: 85, 性价比: 70, '诱鱼效果': 96 },
-                pros: ['经典泳姿', '鲈鱼杀手', '品质稳定'],
-                cons: ['价格偏高', '容易挂底']
-            },
-            {
-                id: 4,
-                name: '海伯 战神系列',
-                category: 'rod',
-                price: 358,
-                rating: 4.5,
-                reviews: 289,
-                image: 'from-red-300 to-red-400',
-                specs: { '长度': '2.13m', '调性': 'M', '重量': '125g', '饵重': '7-28g' },
-                scores: { 灵敏度: 80, 耐用性: 92, 性价比: 95, 外观: 85 },
-                pros: ['性价比极高', '皮实耐用', '适合新手'],
-                cons: ['灵敏度一般', '重量偏大']
-            },
-            {
-                id: 5,
-                name: 'Abu Garcia REVO',
-                category: 'reel',
-                price: 1599,
-                rating: 4.8,
-                reviews: 234,
-                image: 'from-purple-300 to-purple-400',
-                specs: { '类型': '水滴轮', '速比': '7.3:1', '重量': '184g', '轴承': '10+1' },
-                scores: { 抛投性: 94, 耐用性: 93, 性价比: 72, '刹车系统': 96 },
-                pros: ['磁力刹车精准', '高速比', '做工精细'],
-                cons: ['价格高', '维护成本高']
-            },
-            {
-                id: 6,
-                name: 'OWNER 钩子套装',
-                category: 'accessory',
-                price: 89,
-                rating: 4.6,
-                reviews: 512,
-                image: 'from-yellow-300 to-yellow-400',
-                specs: { '数量': '50 枚', '型号': '混合装', '材质': '高碳钢', '涂层': '黑色' },
-                scores: { 锋利度: 94, 耐用性: 88, 性价比: 92, '防锈性': 85 },
-                pros: ['超级锋利', '性价比高', '型号齐全'],
-                cons: ['容易生锈', '小号偏软']
-            }
-        ];
-
         let compareList = [];
 
         function renderGear(category = 'all') {
             const grid = document.getElementById('gearGrid');
-            const filtered = category === 'all' ? gearData : gearData.filter(g => g.category === category);
+            const filtered = category === 'all' ? gearDatabase : gearDatabase.filter(g => g.category === category);
             
             grid.innerHTML = filtered.map(gear => `
                 <div class="bg-white rounded-xl overflow-hidden shadow-lg gear-card">
@@ -286,17 +243,157 @@
             document.getElementById('compareCount').textContent = compareList.length;
         }
 
+        function clearCompare() {
+            compareList = [];
+            updateCompareCount();
+            renderGear(document.querySelector('.category-btn.active').dataset.category);
+        }
+
         function openCompare() {
             if (compareList.length < 2) {
                 alert('请至少选择 2 款装备进行对比');
                 return;
             }
-            const selected = gearData.filter(g => compareList.includes(g.id));
-            alert(`对比功能演示\n\n已选：${selected.map(s => s.name).join(' vs ')}\n\n完整对比表格开发中...`);
+            
+            const selected = gearDatabase.filter(g => compareList.includes(g.id));
+            renderCompareModal(selected);
+            document.getElementById('compareModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeCompare() {
+            document.getElementById('compareModal').classList.add('hidden');
+        }
+
+        function renderCompareModal(gears) {
+            const content = document.getElementById('compareContent');
+            
+            // 基本信息对比
+            let html = `
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">基本信息</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="text-left p-4 font-medium text-gray-600">项目</th>
+                                    ${gears.map(g => `<th class="text-left p-4 font-bold text-gray-900">${g.name}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-t">
+                                    <td class="p-4 text-gray-600">类别</td>
+                                    ${gears.map(g => `<td class="p-4">${getCategoryName(g.category)}</td>`).join('')}
+                                </tr>
+                                <tr class="border-t bg-gray-50">
+                                    <td class="p-4 text-gray-600">价格</td>
+                                    ${gears.map(g => `<td class="p-4 text-2xl font-bold text-primary-600">¥${g.price}</td>`).join('')}
+                                </tr>
+                                <tr class="border-t">
+                                    <td class="p-4 text-gray-600">评分</td>
+                                    ${gears.map(g => `
+                                        <td class="p-4">
+                                            <div class="flex items-center">
+                                                <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1"></i>
+                                                <span class="font-bold">${g.rating}</span>
+                                                <span class="text-gray-500 text-sm ml-1">(${g.reviews})</span>
+                                            </div>
+                                        </td>
+                                    `).join('')}
+                                </tr>
+                                ${Object.keys(gears[0].specs).map(key => `
+                                    <tr class="border-t ${key.includes('重量') || key.includes('长度') ? 'bg-gray-50' : ''}">
+                                        <td class="p-4 text-gray-600">${key}</td>
+                                        ${gears.map(g => `<td class="p-4">${g.specs[key] || '-'}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">性能评分对比</h3>
+                    <div class="space-y-4">
+                        ${Object.keys(gears[0].scores).map(key => `
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600 font-medium">${key}</span>
+                                </div>
+                                <div class="grid grid-cols-${gears.length} gap-4">
+                                    ${gears.map(g => `
+                                        <div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm text-gray-500">${g.name}</span>
+                                                <span class="text-sm font-bold text-gray-900">${g.scores[key]}</span>
+                                            </div>
+                                            <div class="bg-gray-200 rounded-full h-3">
+                                                <div class="bg-primary-500 h-3 rounded-full" style="width: ${g.scores[key]}%"></div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-${gears.length} gap-6">
+                    ${gears.map(g => `
+                        <div class="bg-gray-50 rounded-xl p-6">
+                            <h4 class="font-bold text-gray-900 mb-3">${g.name}</h4>
+                            <div class="mb-4">
+                                <h5 class="text-sm font-medium text-green-700 mb-2 flex items-center">
+                                    <i data-lucide="check-circle" class="w-4 h-4 mr-1"></i>
+                                    优点
+                                </h5>
+                                <ul class="space-y-1">
+                                    ${g.pros.map(p => `<li class="text-sm text-gray-600">• ${p}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-medium text-red-700 mb-2 flex items-center">
+                                    <i data-lucide="x-circle" class="w-4 h-4 mr-1"></i>
+                                    缺点
+                                </h5>
+                                <ul class="space-y-1">
+                                    ${g.cons.map(c => `<li class="text-sm text-gray-600">• ${c}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
+                    <h4 class="font-bold text-blue-900 mb-2 flex items-center">
+                        <i data-lucide="lightbulb" class="w-5 h-5 mr-2"></i>
+                        选购建议
+                    </h4>
+                    <ul class="space-y-2 text-sm text-blue-800">
+                        ${generateRecommendation(gears)}
+                    </ul>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+        }
+
+        function generateRecommendation(gears) {
+            const bestRating = gears.reduce((max, g) => g.rating > max.rating ? g : max, gears[0]);
+            const bestValue = gears.reduce((max, g) => (g.rating / g.price) > (max.rating / max.price) ? g : max, gears[0]);
+            const cheapest = gears.reduce((min, g) => g.price < min.price ? g : min, gears[0]);
+            
+            return `
+                <li>⭐ <strong>综合最佳</strong>: ${bestRating.name}（评分 ${bestRating.rating}）</li>
+                <li>💰 <strong>性价比最高</strong>: ${bestValue.name}（¥${bestValue.price}）</li>
+                <li>💵 <strong>最经济</strong>: ${cheapest.name}（¥${cheapest.price}）</li>
+                <li>💡 <strong>新手推荐</strong>: 建议选择价格适中、评价较多的产品</li>
+                <li>🎯 <strong>进阶选择</strong>: 关注性能评分，选择专业级装备</li>
+            `;
         }
 
         function viewGearDetail(id) {
-            const gear = gearData.find(g => g.id === id);
+            const gear = gearDatabase.find(g => g.id === id);
             alert(`${gear.name}\n\n价格：¥${gear.price}\n评分：${gear.rating} (${gear.reviews}条评价)\n\n优点：${gear.pros.join('、')}\n缺点：${gear.cons.join('、')}`);
         }
 

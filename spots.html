@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全国路亚钓点地图 - 查找附近钓点</title>
-    <meta name="description" content="全国路亚钓点分布地图，支持按省份、鱼种、收费类型筛选，附带钓友真实评价">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+    <!-- Leaflet 地图 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -23,13 +23,15 @@
             }
         }
     </script>
-    
     <style>
         body { font-family: 'Inter', sans-serif; }
         .hero-gradient { background: linear-gradient(135deg, #1A4D4D 0%, #2D7D7D 50%, #3FA8A8 100%); }
+        #map { height: 600px; width: 100%; border-radius: 1rem; }
         .spot-card { transition: all 0.3s ease; }
         .spot-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
         .filter-btn.active { background: #2D7D7D; color: white; }
+        .leaflet-popup-content-wrapper { border-radius: 12px; }
+        .leaflet-popup-content { margin: 0; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -46,7 +48,7 @@
                     <a href="index.html" class="text-gray-700 hover:text-primary-500 font-medium">首页</a>
                     <a href="guide.html" class="text-gray-700 hover:text-primary-500 font-medium">入门指南</a>
                     <a href="#" class="text-primary-500 font-medium">钓点推荐</a>
-                    <a href="#gear" class="text-gray-700 hover:text-primary-500 font-medium">装备库</a>
+                    <a href="gear.html" class="text-gray-700 hover:text-primary-500 font-medium">装备库</a>
                 </div>
                 <a href="guide.html" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition">开始学习</a>
             </div>
@@ -77,6 +79,15 @@
         </div>
     </section>
 
+    <!-- 地图区域 -->
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-2xl shadow-lg p-4">
+                <div id="map"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- 筛选器 -->
     <section class="py-8 bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,7 +95,7 @@
                 <span class="text-sm font-medium text-gray-700">筛选：</span>
                 
                 <!-- 省份筛选 -->
-                <select id="provinceFilter" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                <select id="provinceFilter" onchange="filterSpots()" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     <option value="">全部省份</option>
                     <option value="浙江">浙江</option>
                     <option value="广东">广东</option>
@@ -92,22 +103,23 @@
                     <option value="江苏">江苏</option>
                     <option value="四川">四川</option>
                     <option value="云南">云南</option>
+                    <option value="北京">北京</option>
                 </select>
                 
                 <!-- 鱼种筛选 -->
                 <div class="flex gap-2">
-                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="all">全部鱼种</button>
-                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鲈鱼">鲈鱼</button>
-                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="翘嘴">翘嘴</button>
-                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鳜鱼">鳜鱼</button>
-                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鳡鱼">鳡鱼</button>
+                    <button class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="all" onclick="filterByFish('all')">全部鱼种</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鲈鱼" onclick="filterByFish('鲈鱼')">鲈鱼</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="翘嘴" onclick="filterByFish('翘嘴')">翘嘴</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鳜鱼" onclick="filterByFish('鳜鱼')">鳜鱼</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鳡鱼" onclick="filterByFish('鳡鱼')">鳡鱼</button>
                 </div>
                 
                 <!-- 收费类型 -->
                 <div class="flex gap-2 ml-auto">
-                    <button class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="all">全部</button>
-                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="free">免费</button>
-                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="paid">收费</button>
+                    <button class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="all" onclick="filterByType('all')">全部</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="free" onclick="filterByType('free')">免费</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="paid" onclick="filterByType('paid')">收费</button>
                 </div>
             </div>
         </div>
@@ -117,7 +129,7 @@
     <section class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-6 flex items-center justify-between">
-                <p class="text-gray-600">找到 <span id="spotCount" class="font-bold text-primary-500">9</span> 个钓点</p>
+                <p class="text-gray-600">找到 <span id="spotCount" class="font-bold text-primary-500">0</span> 个钓点</p>
                 <select class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     <option>默认排序</option>
                     <option>评分最高</option>
@@ -146,141 +158,70 @@
     </footer>
 
     <!-- 钓点数据 -->
+    <script src="database.js"></script>
     <script>
-        const spotsData = [
-            {
-                id: 1,
-                name: '千岛湖中心湖区',
-                province: '浙江',
-                city: '杭州',
-                fish: ['鲈鱼', '鳜鱼', '翘嘴'],
-                type: 'paid',
-                price: '150 元/天',
-                rating: 4.8,
-                reviews: 1256,
-                image: '从 blue-400 到 blue-600',
-                description: '国内顶级路亚圣地，水质清澈，鱼种丰富，四季可钓',
-                tags: ['热门', '推荐']
-            },
-            {
-                id: 2,
-                name: '万绿湖主湖区',
-                province: '广东',
-                city: '河源',
-                fish: ['鲈鱼', '红眼', '草鱼'],
-                type: 'paid',
-                price: '100 元/天',
-                rating: 4.7,
-                reviews: 892,
-                image: '从 green-400 到 green-600',
-                description: '华南地区知名路亚钓场，鲈鱼密度高，适合新手',
-                tags: ['推荐']
-            },
-            {
-                id: 3,
-                name: '丹江口水库',
-                province: '湖北',
-                city: '十堰',
-                fish: ['鳡鱼', '翘嘴', '鲌鱼'],
-                type: 'free',
-                price: '免费',
-                rating: 4.9,
-                reviews: 634,
-                image: '从 purple-400 到 purple-600',
-                description: '北方最大淡水湖，巨物频出，鳡鱼天堂',
-                tags: ['新晋', '免费']
-            },
-            {
-                id: 4,
-                name: '太湖西山岛',
-                province: '江苏',
-                city: '苏州',
-                fish: ['翘嘴', '鲌鱼', '黑鱼'],
-                type: 'free',
-                price: '免费',
-                rating: 4.5,
-                reviews: 523,
-                image: '从 cyan-400 到 cyan-600',
-                description: '长三角经典钓点，交通便利，适合周末短途',
-                tags: ['免费']
-            },
-            {
-                id: 5,
-                name: '泸沽湖',
-                province: '云南',
-                city: '丽江',
-                fish: ['裂腹鱼', '细鳞鱼'],
-                type: 'paid',
-                price: '200 元/天',
-                rating: 4.9,
-                reviews: 412,
-                image: '从 indigo-400 到 indigo-600',
-                description: '高原湖泊，风景绝美，特有鱼种，路亚 + 旅行',
-                tags: ['特色']
-            },
-            {
-                id: 6,
-                name: '升钟湖',
-                province: '四川',
-                city: '南充',
-                fish: ['鲈鱼', '翘嘴', '鳜鱼'],
-                type: 'paid',
-                price: '120 元/天',
-                rating: 4.6,
-                reviews: 378,
-                image: '从 emerald-400 到 emerald-600',
-                description: '西南地区最大人工湖，鱼种多样，配套设施完善',
-                tags: []
-            },
-            {
-                id: 7,
-                name: '长江口崇明岛',
-                province: '江苏',
-                city: '南通',
-                fish: ['海鲈', '鲻鱼', '鳗鱼'],
-                type: 'free',
-                price: '免费',
-                rating: 4.4,
-                reviews: 289,
-                image: '从 teal-400 到 teal-600',
-                description: '咸淡水交汇处，海钓体验，季节性强',
-                tags: ['免费', '海钓']
-            },
-            {
-                id: 8,
-                name: '抚仙湖',
-                province: '云南',
-                city: '玉溪',
-                fish: ['抗浪鱼', '鲤鱼'],
-                type: 'paid',
-                price: '180 元/天',
-                rating: 4.8,
-                reviews: 256,
-                image: '从 sky-400 到 sky-600',
-                description: '中国第二深水湖，水质极佳，高原风光',
-                tags: ['特色']
-            },
-            {
-                id: 9,
-                name: '北京怀柔水库',
-                province: '北京',
-                city: '北京',
-                fish: ['翘嘴', '鲌鱼', '黑鱼'],
-                type: 'free',
-                price: '免费',
-                rating: 4.3,
-                reviews: 445,
-                image: 'from gray-400 to gray-600',
-                description: '北京周边最近的大型路亚钓点，适合京津冀钓友',
-                tags: ['免费', '近郊']
-            }
-        ];
+        let map;
+        let markers = [];
+        let filteredSpots = [];
+
+        // 初始化地图
+        function initMap() {
+            // 创建地图，中心点设在中国中部
+            map = L.map('map').setView([30.5, 114.3], 5);
+            
+            // 添加 OpenStreetMap 图层
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18
+            }).addTo(map);
+            
+            // 添加钓点标记
+            addSpotMarkers(spotsDatabase);
+        }
+
+        // 添加钓点标记
+        function addSpotMarkers(spots) {
+            // 清除现有标记
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            
+            spots.forEach(spot => {
+                if (spot.coords) {
+                    const marker = L.marker([spot.coords.lat, spot.coords.lng])
+                        .addTo(map)
+                        .bindPopup(`
+                            <div class="p-2">
+                                <h3 class="font-bold text-lg mb-1">${spot.name}</h3>
+                                <p class="text-sm text-gray-600 mb-2">${spot.province} · ${spot.city}</p>
+                                <div class="flex items-center mb-2">
+                                    <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1"></i>
+                                    <span class="font-medium">${spot.rating}</span>
+                                    <span class="text-gray-500 text-sm ml-1">(${spot.reviews})</span>
+                                </div>
+                                <div class="flex gap-2 mb-2">
+                                    ${spot.fish.map(f => `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">${f}</span>`).join('')}
+                                </div>
+                                <p class="text-sm text-gray-700 mb-2">${spot.description}</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="${spot.type === 'free' ? 'text-green-600' : 'text-primary-600'} font-medium text-sm">${spot.price}</span>
+                                    <button onclick="viewSpotDetail(${spot.id})" class="bg-primary-500 hover:bg-primary-600 text-white px-3 py-1 rounded text-sm">详情</button>
+                                </div>
+                            </div>
+                        `);
+                    
+                    markers.push(marker);
+                }
+            });
+            
+            lucide.createIcons();
+        }
 
         // 渲染钓点卡片
         function renderSpots(spots) {
             const grid = document.getElementById('spotsGrid');
             const countEl = document.getElementById('spotCount');
             
+            filteredSpots = spots;
             countEl.textContent = spots.length;
             
             if (spots.length === 0) {
@@ -337,23 +278,76 @@
         // 搜索功能
         function searchSpots() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = spotsData.filter(spot => 
+            const filtered = spotsDatabase.filter(spot => 
                 spot.name.toLowerCase().includes(query) ||
                 spot.city.toLowerCase().includes(query) ||
                 spot.fish.some(f => f.toLowerCase().includes(query))
             );
             renderSpots(filtered);
+            addSpotMarkers(filtered);
+        }
+
+        // 筛选功能
+        function filterSpots() {
+            const province = document.getElementById('provinceFilter').value;
+            let filtered = spotsDatabase;
+            
+            if (province) {
+                filtered = filtered.filter(spot => spot.province === province);
+            }
+            
+            renderSpots(filtered);
+            addSpotMarkers(filtered);
+        }
+
+        // 按鱼种筛选
+        function filterByFish(fish) {
+            document.querySelectorAll('[data-fish]').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.fish === fish) btn.classList.add('active');
+            });
+            
+            let filtered = spotsDatabase;
+            
+            if (fish !== 'all') {
+                filtered = filtered.filter(spot => spot.fish.includes(fish));
+            }
+            
+            renderSpots(filtered);
+            addSpotMarkers(filtered);
+        }
+
+        // 按类型筛选
+        function filterByType(type) {
+            document.querySelectorAll('[data-type]').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.type === type) btn.classList.add('active');
+            });
+            
+            let filtered = spotsDatabase;
+            
+            if (type === 'free') {
+                filtered = filtered.filter(spot => spot.type === 'free');
+            } else if (type === 'paid') {
+                filtered = filtered.filter(spot => spot.type === 'paid');
+            }
+            
+            renderSpots(filtered);
+            addSpotMarkers(filtered);
         }
 
         // 查看详情
         function viewSpotDetail(id) {
-            const spot = spotsData.find(s => s.id === id);
-            alert(`查看 ${spot.name} 的详细信息\n\n${spot.description}\n\n目标鱼种：${spot.fish.join('、')}\n${spot.type === 'free' ? '免费钓点' : '收费：' + spot.price}`);
+            const spot = spotsDatabase.find(s => s.id === id);
+            alert(`${spot.name}\n\n${spot.description}\n\n目标鱼种：${spot.fish.join('、')}\n最佳季节：${spot.bestSeason}\n难度：${spot.difficulty}\n${spot.type === 'free' ? '免费钓点' : '收费：' + spot.price}`);
         }
 
         // 初始化
-        renderSpots(spotsData);
-        lucide.createIcons();
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            renderSpots(spotsDatabase);
+            lucide.createIcons();
+        });
 
         // 搜索框回车
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
