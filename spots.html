@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国路亚钓点地图 - 查找附近钓点</title>
+    <meta name="description" content="全国路亚钓点分布地图，支持按省份、鱼种、收费类型筛选，附带钓友真实评价">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#E8F5F5', 100: '#C9E8E8', 200: '#9DD6D6', 300: '#6BC0C0', 400: '#3FA8A8', 500: '#2D7D7D', 600: '#256666', 700: '#1F5252', 800: '#1A4343', 900: '#1A4D4D' },
+                        accent: { light: '#F4A460', DEFAULT: '#D97B3D', dark: '#B8642B' }
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #1A4D4D 0%, #2D7D7D 50%, #3FA8A8 100%); }
+        .spot-card { transition: all 0.3s ease; }
+        .spot-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .filter-btn.active { background: #2D7D7D; color: white; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <i data-lucide="fish" class="w-8 h-8 text-primary-500"></i>
+                    <span class="text-xl font-bold text-gray-900">路亚钓鱼</span>
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-primary-500 font-medium">首页</a>
+                    <a href="guide.html" class="text-gray-700 hover:text-primary-500 font-medium">入门指南</a>
+                    <a href="#" class="text-primary-500 font-medium">钓点推荐</a>
+                    <a href="#gear" class="text-gray-700 hover:text-primary-500 font-medium">装备库</a>
+                </div>
+                <a href="guide.html" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition">开始学习</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="hero-gradient text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">全国钓点地图</h1>
+            <p class="text-xl text-primary-100 mb-8">2000+ 真实钓点，找到你附近的路亚天堂</p>
+            
+            <!-- 搜索框 -->
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-2xl p-4">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-grow relative">
+                            <i data-lucide="search" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                            <input type="text" id="searchInput" placeholder="搜索钓点名称、城市、鱼种..." class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900">
+                        </div>
+                        <button onclick="searchSpots()" class="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-lg font-medium transition inline-flex items-center justify-center">
+                            <i data-lucide="search" class="w-5 h-5 mr-2"></i>
+                            搜索
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 筛选器 -->
+    <section class="py-8 bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center gap-4">
+                <span class="text-sm font-medium text-gray-700">筛选：</span>
+                
+                <!-- 省份筛选 -->
+                <select id="provinceFilter" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <option value="">全部省份</option>
+                    <option value="浙江">浙江</option>
+                    <option value="广东">广东</option>
+                    <option value="湖北">湖北</option>
+                    <option value="江苏">江苏</option>
+                    <option value="四川">四川</option>
+                    <option value="云南">云南</option>
+                </select>
+                
+                <!-- 鱼种筛选 -->
+                <div class="flex gap-2">
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="all">全部鱼种</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鲈鱼">鲈鱼</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="翘嘴">翘嘴</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鳜鱼">鳜鱼</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:border-primary-500" data-fish="鳡鱼">鳡鱼</button>
+                </div>
+                
+                <!-- 收费类型 -->
+                <div class="flex gap-2 ml-auto">
+                    <button class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="all">全部</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="free">免费</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-300" data-type="paid">收费</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 钓点列表 -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-6 flex items-center justify-between">
+                <p class="text-gray-600">找到 <span id="spotCount" class="font-bold text-primary-500">9</span> 个钓点</p>
+                <select class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <option>默认排序</option>
+                    <option>评分最高</option>
+                    <option>最近热门</option>
+                    <option>距离最近</option>
+                </select>
+            </div>
+            
+            <div id="spotsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 钓点卡片由 JS 动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <i data-lucide="fish" class="w-6 h-6 text-primary-400"></i>
+                    <span class="text-lg font-bold text-white">路亚钓鱼</span>
+                </div>
+                <p class="text-sm text-gray-400">&copy; 2026 路亚钓鱼网。All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 钓点数据 -->
+    <script>
+        const spotsData = [
+            {
+                id: 1,
+                name: '千岛湖中心湖区',
+                province: '浙江',
+                city: '杭州',
+                fish: ['鲈鱼', '鳜鱼', '翘嘴'],
+                type: 'paid',
+                price: '150 元/天',
+                rating: 4.8,
+                reviews: 1256,
+                image: '从 blue-400 到 blue-600',
+                description: '国内顶级路亚圣地，水质清澈，鱼种丰富，四季可钓',
+                tags: ['热门', '推荐']
+            },
+            {
+                id: 2,
+                name: '万绿湖主湖区',
+                province: '广东',
+                city: '河源',
+                fish: ['鲈鱼', '红眼', '草鱼'],
+                type: 'paid',
+                price: '100 元/天',
+                rating: 4.7,
+                reviews: 892,
+                image: '从 green-400 到 green-600',
+                description: '华南地区知名路亚钓场，鲈鱼密度高，适合新手',
+                tags: ['推荐']
+            },
+            {
+                id: 3,
+                name: '丹江口水库',
+                province: '湖北',
+                city: '十堰',
+                fish: ['鳡鱼', '翘嘴', '鲌鱼'],
+                type: 'free',
+                price: '免费',
+                rating: 4.9,
+                reviews: 634,
+                image: '从 purple-400 到 purple-600',
+                description: '北方最大淡水湖，巨物频出，鳡鱼天堂',
+                tags: ['新晋', '免费']
+            },
+            {
+                id: 4,
+                name: '太湖西山岛',
+                province: '江苏',
+                city: '苏州',
+                fish: ['翘嘴', '鲌鱼', '黑鱼'],
+                type: 'free',
+                price: '免费',
+                rating: 4.5,
+                reviews: 523,
+                image: '从 cyan-400 到 cyan-600',
+                description: '长三角经典钓点，交通便利，适合周末短途',
+                tags: ['免费']
+            },
+            {
+                id: 5,
+                name: '泸沽湖',
+                province: '云南',
+                city: '丽江',
+                fish: ['裂腹鱼', '细鳞鱼'],
+                type: 'paid',
+                price: '200 元/天',
+                rating: 4.9,
+                reviews: 412,
+                image: '从 indigo-400 到 indigo-600',
+                description: '高原湖泊，风景绝美，特有鱼种，路亚 + 旅行',
+                tags: ['特色']
+            },
+            {
+                id: 6,
+                name: '升钟湖',
+                province: '四川',
+                city: '南充',
+                fish: ['鲈鱼', '翘嘴', '鳜鱼'],
+                type: 'paid',
+                price: '120 元/天',
+                rating: 4.6,
+                reviews: 378,
+                image: '从 emerald-400 到 emerald-600',
+                description: '西南地区最大人工湖，鱼种多样，配套设施完善',
+                tags: []
+            },
+            {
+                id: 7,
+                name: '长江口崇明岛',
+                province: '江苏',
+                city: '南通',
+                fish: ['海鲈', '鲻鱼', '鳗鱼'],
+                type: 'free',
+                price: '免费',
+                rating: 4.4,
+                reviews: 289,
+                image: '从 teal-400 到 teal-600',
+                description: '咸淡水交汇处，海钓体验，季节性强',
+                tags: ['免费', '海钓']
+            },
+            {
+                id: 8,
+                name: '抚仙湖',
+                province: '云南',
+                city: '玉溪',
+                fish: ['抗浪鱼', '鲤鱼'],
+                type: 'paid',
+                price: '180 元/天',
+                rating: 4.8,
+                reviews: 256,
+                image: '从 sky-400 到 sky-600',
+                description: '中国第二深水湖，水质极佳，高原风光',
+                tags: ['特色']
+            },
+            {
+                id: 9,
+                name: '北京怀柔水库',
+                province: '北京',
+                city: '北京',
+                fish: ['翘嘴', '鲌鱼', '黑鱼'],
+                type: 'free',
+                price: '免费',
+                rating: 4.3,
+                reviews: 445,
+                image: 'from gray-400 to gray-600',
+                description: '北京周边最近的大型路亚钓点，适合京津冀钓友',
+                tags: ['免费', '近郊']
+            }
+        ];
+
+        // 渲染钓点卡片
+        function renderSpots(spots) {
+            const grid = document.getElementById('spotsGrid');
+            const countEl = document.getElementById('spotCount');
+            
+            countEl.textContent = spots.length;
+            
+            if (spots.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <i data-lucide="map-pin-off" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
+                        <p class="text-gray-500 text-lg">没有找到符合条件的钓点</p>
+                        <p class="text-gray-400 text-sm mt-2">尝试调整筛选条件</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = spots.map(spot => `
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg spot-card">
+                    <div class="h-48 bg-gradient-to-br ${spot.image} flex items-center justify-center">
+                        <i data-lucide="map-pin" class="w-16 h-16 text-white opacity-60"></i>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-bold text-gray-900">${spot.name}</h3>
+                            ${spot.tags.length > 0 ? `
+                                <div class="flex gap-1">
+                                    ${spot.tags.map(tag => `<span class="bg-${tag === '免费' ? 'green' : 'blue'}-100 text-${tag === '免费' ? 'green' : 'blue'}-700 px-2 py-1 rounded text-xs font-medium">${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <p class="text-sm text-gray-500 mb-2">${spot.province} · ${spot.city}</p>
+                        <p class="text-gray-600 text-sm mb-3">${spot.description}</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            ${spot.fish.map(f => `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${f}</span>`).join('')}
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-3 border-t">
+                            <div class="flex items-center">
+                                <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1"></i>
+                                <span class="font-medium text-gray-900">${spot.rating}</span>
+                                <span class="text-gray-500 text-sm ml-1">(${spot.reviews})</span>
+                            </div>
+                            <span class="${spot.type === 'free' ? 'text-green-600' : 'text-primary-600'} font-medium text-sm">${spot.price}</span>
+                        </div>
+                        
+                        <button onclick="viewSpotDetail(${spot.id})" class="w-full mt-4 bg-primary-50 hover:bg-primary-100 text-primary-600 py-2 rounded-lg font-medium transition">
+                            查看详情
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        // 搜索功能
+        function searchSpots() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = spotsData.filter(spot => 
+                spot.name.toLowerCase().includes(query) ||
+                spot.city.toLowerCase().includes(query) ||
+                spot.fish.some(f => f.toLowerCase().includes(query))
+            );
+            renderSpots(filtered);
+        }
+
+        // 查看详情
+        function viewSpotDetail(id) {
+            const spot = spotsData.find(s => s.id === id);
+            alert(`查看 ${spot.name} 的详细信息\n\n${spot.description}\n\n目标鱼种：${spot.fish.join('、')}\n${spot.type === 'free' ? '免费钓点' : '收费：' + spot.price}`);
+        }
+
+        // 初始化
+        renderSpots(spotsData);
+        lucide.createIcons();
+
+        // 搜索框回车
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchSpots();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路亚入门指南 - 新手从零开始学路亚</title>
+    <meta name="description" content="完整的路亚入门教程，从装备选择到抛投技巧，从读水找鱼到实战经验，新手必看">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#E8F5F5', 100: '#C9E8E8', 200: '#9DD6D6', 300: '#6BC0C0',
+                            400: '#3FA8A8', 500: '#2D7D7D', 600: '#256666', 700: '#1F5252',
+                            800: '#1A4343', 900: '#1A4D4D',
+                        },
+                        accent: { light: '#F4A460', DEFAULT: '#D97B3D', dark: '#B8642B' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #1A4D4D 0%, #2D7D7D 50%, #3FA8A8 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .step-line { position: relative; }
+        .step-line::before {
+            content: ''; position: absolute; left: 24px; top: 48px; bottom: -48px;
+            width: 2px; background: #E5E7EB;
+        }
+        .step-line:last-child::before { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <i data-lucide="fish" class="w-8 h-8 text-primary-500"></i>
+                    <span class="text-xl font-bold text-gray-900">路亚钓鱼</span>
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-primary-500 font-medium">首页</a>
+                    <a href="#" class="text-primary-500 font-medium">入门指南</a>
+                    <a href="#spots" class="text-gray-700 hover:text-primary-500 font-medium">钓点推荐</a>
+                    <a href="#gear" class="text-gray-700 hover:text-primary-500 font-medium">装备库</a>
+                </div>
+                <a href="#" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition">开始学习</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="hero-gradient text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">新手入门指南</h1>
+            <p class="text-xl text-primary-100">从零基础到独立作钓，5 步开启你的路亚之旅</p>
+        </div>
+    </section>
+
+    <!-- 学习路径 -->
+    <section class="py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- 步骤 1 -->
+            <div class="step-line flex gap-6 mb-12">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg">1</div>
+                </div>
+                <div class="flex-grow bg-white rounded-2xl shadow-lg p-8 card-hover">
+                    <div class="flex items-start justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">了解路亚基础</h2>
+                        <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">5 分钟</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">路亚钓鱼（Lure Fishing）是一种使用假饵模仿小鱼小虾，诱使掠食性鱼类攻击的钓鱼方式。相比传统钓鱼，路亚更注重主动寻找鱼群，被称为"水上高尔夫"。</p>
+                    
+                    <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                        <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                            <i data-lucide="lightbulb" class="w-5 h-5 mr-2 text-accent"></i>
+                            核心概念
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="flex items-start">
+                                <i data-lucide="circle-check" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <div>
+                                    <div class="font-medium text-gray-900">主动找鱼</div>
+                                    <div class="text-sm text-gray-600">不断抛投搜索，而非等待</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i data-lucide="circle-check" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <div>
+                                    <div class="font-medium text-gray-900">假饵作钓</div>
+                                    <div class="text-sm text-gray-600">模拟猎物，诱鱼攻击</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i data-lucide="circle-check" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <div>
+                                    <div class="font-medium text-gray-900">环保放生</div>
+                                    <div class="text-sm text-gray-600">钓获后放流，保护资源</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i data-lucide="circle-check" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <div>
+                                    <div class="font-medium text-gray-900">装备轻便</div>
+                                    <div class="text-sm text-gray-600">一套装备走天下</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="#step2" class="text-primary-500 hover:text-primary-600 font-medium inline-flex items-center">
+                        继续下一步
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 步骤 2 -->
+            <div id="step2" class="step-line flex gap-6 mb-12">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg">2</div>
+                </div>
+                <div class="flex-grow bg-white rounded-2xl shadow-lg p-8 card-hover">
+                    <div class="flex items-start justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">选择第一套装备</h2>
+                        <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">15 分钟</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">新手不需要买最贵的装备，但需要选对适合的。以下是入门推荐配置：</p>
+                    
+                    <div class="space-y-6">
+                        <!-- 装备项 -->
+                        <div class="border border-gray-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                    <i data-lucide="circle-dot" class="w-5 h-5 mr-2 text-primary-500"></i>
+                                    鱼竿
+                                </h3>
+                                <span class="text-sm font-medium text-gray-500">预算：200-500 元</span>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-700 mb-2">推荐规格</div>
+                                    <ul class="space-y-1 text-sm text-gray-600">
+                                        <li>• 长度：1.8-2.1 米</li>
+                                        <li>• 调性：ML 或 M 调</li>
+                                        <li>• 类型：直柄竿（新手友好）</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-700 mb-2">适合鱼种</div>
+                                    <ul class="space-y-1 text-sm text-gray-600">
+                                        <li>• 鲈鱼、翘嘴、红眼</li>
+                                        <li>• 5 斤以内淡水鱼</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 装备项 -->
+                        <div class="border border-gray-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                    <i data-lucide="disc" class="w-5 h-5 mr-2 text-primary-500"></i>
+                                    鱼轮
+                                </h3>
+                                <span class="text-sm font-medium text-gray-500">预算：200-400 元</span>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-700 mb-2">推荐规格</div>
+                                    <ul class="space-y-1 text-sm text-gray-600">
+                                        <li>• 类型：纺车轮（易上手）</li>
+                                        <li>• 型号：2000-2500 型</li>
+                                        <li>• 速比：5.2:1 左右</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-700 mb-2">品牌推荐</div>
+                                    <ul class="space-y-1 text-sm text-gray-600">
+                                        <li>• 禧玛诺（Shimano）</li>
+                                        <li>• 达亿瓦（Daiwa）</li>
+                                        <li>• 国产：海伯、光威</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 装备项 -->
+                        <div class="border border-gray-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                    <i data-lucide="fish-symbol" class="w-5 h-5 mr-2 text-primary-500"></i>
+                                    假饵
+                                </h3>
+                                <span class="text-sm font-medium text-gray-500">预算：100-200 元</span>
+                            </div>
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="font-medium text-gray-900 mb-2">亮片</div>
+                                    <div class="text-sm text-gray-600">万能饵，新手首选</div>
+                                    <div class="text-sm text-gray-500 mt-2">5-10 克</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="font-medium text-gray-900 mb-2">米诺</div>
+                                    <div class="text-sm text-gray-600">模仿小鱼，泳姿自然</div>
+                                    <div class="text-sm text-gray-500 mt-2">7-10cm</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="font-medium text-gray-900 mb-2">软饵</div>
+                                    <div class="text-sm text-gray-600">配铅头钩，底层搜索</div>
+                                    <div class="text-sm text-gray-500 mt-2">5-8cm</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-accent-light bg-opacity-20 border border-accent rounded-xl p-4">
+                        <div class="flex items-start">
+                            <i data-lucide="info" class="w-5 h-5 text-accent-dark mr-2 mt-0.5 flex-shrink-0"></i>
+                            <div class="text-sm text-gray-700">
+                                <span class="font-bold text-accent-dark">新手套装建议：</span>
+                                直接购买套装更划算，约 500-800 元可配齐所有基础装备。等熟练后再根据目标鱼种升级。
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="#step3" class="text-primary-500 hover:text-primary-600 font-medium inline-flex items-center mt-6">
+                        继续下一步
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 步骤 3 -->
+            <div id="step3" class="step-line flex gap-6 mb-12">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg">3</div>
+                </div>
+                <div class="flex-grow bg-white rounded-2xl shadow-lg p-8 card-hover">
+                    <div class="flex items-start justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">学习基础抛投</h2>
+                        <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">30 分钟</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">抛投是路亚的基本功，掌握正确姿势可以避免"炸线"和"炒粉"。</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex gap-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="flex-shrink-0 w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+                            <div>
+                                <div class="font-bold text-gray-900 mb-1">握竿姿势</div>
+                                <div class="text-sm text-gray-600">食指轻扣线杯，其余手指握住竿柄，保持放松</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="flex-shrink-0 w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+                            <div>
+                                <div class="font-bold text-gray-900 mb-1">后摆准备</div>
+                                <div class="text-sm text-gray-600">将竿子举过头顶，饵自然垂于身后，目视目标点</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="flex-shrink-0 w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+                            <div>
+                                <div class="font-bold text-gray-900 mb-1">前抛发力</div>
+                                <div class="text-sm text-gray-600">用手腕和小臂力量向前甩出，同时松开食指放线</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="flex-shrink-0 w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-sm">4</div>
+                            <div>
+                                <div class="font-bold text-gray-900 mb-1">落水控制</div>
+                                <div class="text-sm text-gray-600">饵即将落水时用手指轻压线杯，避免过度放线</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                        <div class="flex items-start">
+                            <i data-lucide="triangle-alert" class="w-5 h-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0"></i>
+                            <div class="text-sm text-gray-700">
+                                <span class="font-bold text-yellow-800">常见错误：</span>
+                                用力过猛（抛投靠的是技巧不是力气）、放线时机不对（多练习找到感觉）、忽略风向（顺风易抛，逆风减力）
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="#step4" class="text-primary-500 hover:text-primary-600 font-medium inline-flex items-center mt-6">
+                        继续下一步
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 步骤 4 -->
+            <div id="step4" class="step-line flex gap-6 mb-12">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg">4</div>
+                </div>
+                <div class="flex-grow bg-white rounded-2xl shadow-lg p-8 card-hover">
+                    <div class="flex items-start justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">学会读水找鱼</h2>
+                        <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">20 分钟</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">鱼不会均匀分布在水中，它们喜欢待在特定结构附近。学会观察水情，找到鱼群藏身之处。</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="border border-gray-200 rounded-xl p-5">
+                            <div class="flex items-center mb-3">
+                                <i data-lucide="waves" class="w-6 h-6 text-primary-500 mr-2"></i>
+                                <h3 class="font-bold text-gray-900">水流变化处</h3>
+                            </div>
+                            <p class="text-sm text-gray-600">洄水湾、缓急流交界处、障碍物后方，这些地方食物丰富，氧气充足</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-5">
+                            <div class="flex items-center mb-3">
+                                <i data-lucide="mountain" class="w-6 h-6 text-primary-500 mr-2"></i>
+                                <h3 class="font-bold text-gray-900">水下结构</h3>
+                            </div>
+                            <p class="text-sm text-gray-600">乱石堆、倒树、桥墩、水草边缘，鱼类喜欢躲藏和伏击</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-5">
+                            <div class="flex items-center mb-3">
+                                <i data-lucide="sun" class="w-6 h-6 text-primary-500 mr-2"></i>
+                                <h3 class="font-bold text-gray-900">光照角度</h3>
+                            </div>
+                            <p class="text-sm text-gray-600">清晨傍晚钓浅滩，中午钓深水或阴凉处，根据光线调整</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-5">
+                            <div class="flex items-center mb-3">
+                                <i data-lucide="thermometer" class="w-6 h-6 text-primary-500 mr-2"></i>
+                                <h3 class="font-bold text-gray-900">水温变化</h3>
+                            </div>
+                            <p class="text-sm text-gray-600">春秋钓浅滩（升温快），夏季钓深水（凉爽），冬季钓向阳</p>
+                        </div>
+                    </div>
+                    
+                    <a href="#step5" class="text-primary-500 hover:text-primary-600 font-medium inline-flex items-center mt-6">
+                        继续下一步
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 步骤 5 -->
+            <div id="step5" class="flex gap-6">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg">5</div>
+                </div>
+                <div class="flex-grow bg-white rounded-2xl shadow-lg p-8 card-hover">
+                    <div class="flex items-start justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">实战练习</h2>
+                        <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">持续</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">理论知识已经掌握，现在该下水实践了！记住：路亚是熟能生巧的运动。</p>
+                    
+                    <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl p-6 mb-6">
+                        <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                            <i data-lucide="target" class="w-5 h-5 mr-2 text-primary-500"></i>
+                            新手第一次作钓建议
+                        </h3>
+                        <ul class="space-y-3 text-sm text-gray-700">
+                            <li class="flex items-start">
+                                <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>选择熟悉的钓点或有人管理的路亚基地</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>目标鱼种选择鲈鱼或翘嘴（较常见）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>从亮片开始，匀速收线即可</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>保持耐心，第一次"打龟"（空手而归）很正常</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                <span>拍张照片记录，无论有没有渔获</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="index.html#spots" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition text-center inline-flex items-center justify-center">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
+                            查找附近钓点
+                        </a>
+                        <a href="#" class="bg-white border-2 border-gray-300 hover:border-primary-500 text-gray-700 px-6 py-3 rounded-lg font-medium transition text-center inline-flex items-center justify-center">
+                            <i data-lucide="video" class="w-4 h-4 mr-2"></i>
+                            观看视频教程
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <i data-lucide="fish" class="w-6 h-6 text-primary-400"></i>
+                    <span class="text-lg font-bold text-white">路亚钓鱼</span>
+                </div>
+                <p class="text-sm text-gray-400">&copy; 2026 路亚钓鱼网。All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

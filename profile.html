@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户中心 - 路亚钓鱼网</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#E8F5F5', 100: '#C9E8E8', 200: '#9DD6D6', 300: '#6BC0C0', 400: '#3FA8A8', 500: '#2D7D7D', 600: '#256666', 700: '#1F5252', 800: '#1A4343', 900: '#1A4D4D' },
+                        accent: { light: '#F4A460', DEFAULT: '#D97B3D', dark: '#B8642B' }
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #1A4D4D 0%, #2D7D7D 50%, #3FA8A8 100%); }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <i data-lucide="fish" class="w-8 h-8 text-primary-500"></i>
+                    <span class="text-xl font-bold text-gray-900">路亚钓鱼</span>
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-primary-500 font-medium">首页</a>
+                    <a href="guide.html" class="text-gray-700 hover:text-primary-500 font-medium">入门指南</a>
+                    <a href="spots.html" class="text-gray-700 hover:text-primary-500 font-medium">钓点推荐</a>
+                    <a href="gear.html" class="text-gray-700 hover:text-primary-500 font-medium">装备库</a>
+                </div>
+                <div id="authButtons">
+                    <button onclick="showLogin()" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition">登录</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 登录/注册模态框 -->
+    <div id="authModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modalTitle" class="text-2xl font-bold text-gray-900">登录</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <!-- 登录表单 -->
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">邮箱</label>
+                    <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="your@email.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                    <input type="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white py-3 rounded-lg font-medium transition">登录</button>
+                <p class="text-center text-sm text-gray-600">
+                    还没有账号？<button type="button" onclick="showRegister()" class="text-primary-500 hover:underline">立即注册</button>
+                </p>
+            </form>
+            
+            <!-- 注册表单（隐藏） -->
+            <form id="registerForm" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">昵称</label>
+                    <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="路亚达人">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">邮箱</label>
+                    <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="your@email.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                    <input type="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="至少 8 位">
+                </div>
+                <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white py-3 rounded-lg font-medium transition">注册</button>
+                <p class="text-center text-sm text-gray-600">
+                    已有账号？<button type="button" onclick="showLogin()" class="text-primary-500 hover:underline">立即登录</button>
+                </p>
+            </form>
+            
+            <!-- 第三方登录 -->
+            <div class="mt-6 pt-6 border-t">
+                <p class="text-center text-sm text-gray-600 mb-4">或使用以下方式登录</p>
+                <div class="grid grid-cols-3 gap-3">
+                    <button class="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50 transition">
+                        <i data-lucide="wechat" class="w-5 h-5 text-green-500"></i>
+                        <span class="text-sm font-medium">微信</span>
+                    </button>
+                    <button class="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50 transition">
+                        <i data-lucide="message-circle" class="w-5 h-5 text-blue-500"></i>
+                        <span class="text-sm font-medium">QQ</span>
+                    </button>
+                    <button class="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50 transition">
+                        <i data-lucide="github" class="w-5 h-5 text-gray-700"></i>
+                        <span class="text-sm font-medium">GitHub</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户中心内容（登录后显示） -->
+    <div id="userCenter" class="hidden py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- 侧边栏 -->
+                <div class="md:col-span-1">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3">张</div>
+                            <h3 class="text-lg font-bold text-gray-900">张三</h3>
+                            <p class="text-sm text-gray-500">路亚新手</p>
+                        </div>
+                        <nav class="space-y-2">
+                            <a href="#" class="block px-4 py-2 bg-primary-50 text-primary-600 rounded-lg font-medium">个人中心</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">我的渔获</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">我的收藏</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">账号设置</a>
+                            <button onclick="logout()" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg font-medium">退出登录</button>
+                        </nav>
+                    </div>
+                </div>
+                
+                <!-- 主内容区 -->
+                <div class="md:col-span-3">
+                    <!-- 统计数据 -->
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                            <div class="text-3xl font-bold text-primary-500 mb-2">12</div>
+                            <div class="text-gray-600">渔获记录</div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                            <div class="text-3xl font-bold text-primary-500 mb-2">5</div>
+                            <div class="text-gray-600">收藏钓点</div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                            <div class="text-3xl font-bold text-primary-500 mb-2">28</div>
+                            <div class="text-gray-600">评论数</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 最近渔获 -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">最近渔获</h3>
+                        <div class="space-y-4">
+                            <div class="flex gap-4 p-4 bg-gray-50 rounded-lg">
+                                <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="camera" class="w-8 h-8 text-white opacity-60"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="font-bold text-gray-900">千岛湖路获 52cm 鲈鱼</h4>
+                                        <span class="text-sm text-gray-500">2 天前</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-2">使用亮片中路亚获，拉力十足！</p>
+                                    <div class="flex gap-2">
+                                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">鲈鱼</span>
+                                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">52cm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 我的评论 -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">我的评论</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-primary-600">千岛湖中心湖区</span>
+                                    <span class="text-xs text-gray-500">5 天前</span>
+                                </div>
+                                <p class="text-gray-700 text-sm">水质非常好，鲈鱼密度高，推荐新手来这里练习！</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-primary-600">Shimano EXP 鱼竿</span>
+                                    <span class="text-xs text-gray-500">1 周前</span>
+                                </div>
+                                <p class="text-gray-700 text-sm">灵敏度超高，就是价格有点贵，预算充足可以入手。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 未登录提示 -->
+    <div id="notLoggedIn" class="py-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="bg-white rounded-2xl shadow-lg p-12">
+                <i data-lucide="user-x" class="w-16 h-16 text-gray-300 mx-auto mb-6"></i>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">请先登录</h2>
+                <p class="text-gray-600 mb-8">登录后可以记录渔获、收藏钓点、发表评论</p>
+                <button onclick="showLogin()" class="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-lg font-medium transition">立即登录</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟登录状态
+        let isLoggedIn = false;
+
+        function showLogin() {
+            document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('modalTitle').textContent = '登录';
+            lucide.createIcons();
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('modalTitle').textContent = '注册';
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function login() {
+            isLoggedIn = true;
+            closeModal();
+            updateUI();
+            alert('登录成功！');
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            updateUI();
+            alert('已退出登录');
+        }
+
+        function updateUI() {
+            const authButtons = document.getElementById('authButtons');
+            const userCenter = document.getElementById('userCenter');
+            const notLoggedIn = document.getElementById('notLoggedIn');
+
+            if (isLoggedIn) {
+                authButtons.innerHTML = `
+                    <a href="#" class="text-gray-700 hover:text-primary-500 font-medium">消息</a>
+                    <a href="#" onclick="event.preventDefault()" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition">个人中心</a>
+                `;
+                userCenter.classList.remove('hidden');
+                notLoggedIn.classList.add('hidden');
+            } else {
+                authButtons.innerHTML = `<button onclick="showLogin()" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition">登录</button>`;
+                userCenter.classList.add('hidden');
+                notLoggedIn.classList.remove('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        // 表单提交
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            login();
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            login(); // 注册后自动登录
+        });
+
+        // 初始化
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "lure-fishing-site",
+  "version": "1.0.0",
+  "description": "专业路亚钓鱼网站 - 入门教程 | 钓点地图 | 装备评测",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required for static site'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "lure",
+    "fishing",
+    "路亚",
+    "钓鱼",
+    "装备",
+    "钓点"
+  ],
+  "author": "路亚钓鱼网",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
+}

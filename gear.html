@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路亚装备评测库 - 鱼竿/鱼轮/假饵真实评测</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#E8F5F5', 100: '#C9E8E8', 200: '#9DD6D6', 300: '#6BC0C0', 400: '#3FA8A8', 500: '#2D7D7D', 600: '#256666', 700: '#1F5252', 800: '#1A4343', 900: '#1A4D4D' },
+                        accent: { light: '#F4A460', DEFAULT: '#D97B3D', dark: '#B8642B' }
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #1A4D4D 0%, #2D7D7D 50%, #3FA8A8 100%); }
+        .gear-card { transition: all 0.3s ease; }
+        .gear-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .rating-bar { transition: width 0.5s ease; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <i data-lucide="fish" class="w-8 h-8 text-primary-500"></i>
+                    <span class="text-xl font-bold text-gray-900">路亚钓鱼</span>
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-primary-500 font-medium">首页</a>
+                    <a href="guide.html" class="text-gray-700 hover:text-primary-500 font-medium">入门指南</a>
+                    <a href="spots.html" class="text-gray-700 hover:text-primary-500 font-medium">钓点推荐</a>
+                    <a href="#" class="text-primary-500 font-medium">装备库</a>
+                </div>
+                <a href="guide.html" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition">开始学习</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="hero-gradient text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">装备评测库</h1>
+            <p class="text-xl text-primary-100">真实评测，帮你选对装备不花冤枉钱</p>
+        </div>
+    </section>
+
+    <!-- 分类导航 -->
+    <section class="py-8 bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="category-btn active px-6 py-3 rounded-xl font-medium transition" data-category="all">
+                    <i data-lucide="grid" class="w-5 h-5 inline mr-2"></i>
+                    全部
+                </button>
+                <button class="category-btn px-6 py-3 rounded-xl font-medium transition border-2" data-category="rod">
+                    <i data-lucide="circle-dot" class="w-5 h-5 inline mr-2"></i>
+                    鱼竿
+                </button>
+                <button class="category-btn px-6 py-3 rounded-xl font-medium transition border-2" data-category="reel">
+                    <i data-lucide="disc" class="w-5 h-5 inline mr-2"></i>
+                    鱼轮
+                </button>
+                <button class="category-btn px-6 py-3 rounded-xl font-medium transition border-2" data-category="lure">
+                    <i data-lucide="fish-symbol" class="w-5 h-5 inline mr-2"></i>
+                    假饵
+                </button>
+                <button class="category-btn px-6 py-3 rounded-xl font-medium transition border-2" data-category="accessory">
+                    <i data-lucide="toolbox" class="w-5 h-5 inline mr-2"></i>
+                    配件
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 对比工具 -->
+    <section class="py-8 bg-primary-50 border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <i data-lucide="git-compare" class="w-6 h-6 text-primary-500"></i>
+                    <div>
+                        <div class="font-bold text-gray-900">装备对比工具</div>
+                        <div class="text-sm text-gray-600">选择 2-3 款装备进行详细对比</div>
+                    </div>
+                </div>
+                <button onclick="openCompare()" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition inline-flex items-center">
+                    <i data-lucide="layers" class="w-5 h-5 mr-2"></i>
+                    开始对比
+                    <span class="ml-2 bg-white text-primary-600 px-2 py-0.5 rounded text-sm font-bold" id="compareCount">0</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 装备列表 -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="gearGrid">
+                <!-- 由 JS 动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <i data-lucide="fish" class="w-6 h-6 text-primary-400"></i>
+                    <span class="text-lg font-bold text-white">路亚钓鱼</span>
+                </div>
+                <p class="text-sm text-gray-400">&copy; 2026 路亚钓鱼网。All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 装备数据 -->
+    <script>
+        const gearData = [
+            {
+                id: 1,
+                name: 'Shimano 禧玛诺 EXP',
+                category: 'rod',
+                price: 1299,
+                rating: 4.8,
+                reviews: 356,
+                image: 'from-gray-300 to-gray-400',
+                specs: { '长度': '1.98m', '调性': 'ML', '重量': '95g', '饵重': '3-14g' },
+                scores: { 灵敏度: 95, 耐用性: 90, 性价比: 75, 外观: 92 },
+                pros: ['超高灵敏度', '轻量化设计', '导环质量优秀'],
+                cons: ['价格偏高', '新手不易上手']
+            },
+            {
+                id: 2,
+                name: 'Daiwa 达亿瓦 TATULA',
+                category: 'reel',
+                price: 899,
+                rating: 4.7,
+                reviews: 423,
+                image: 'from-blue-300 to-blue-400',
+                specs: { '类型': '水滴轮', '速比': '6.3:1', '重量': '205g', '线容量': '0.35mm-100m' },
+                scores: { 抛投性: 92, 耐用性: 88, 性价比: 85, '刹车系统': 90 },
+                pros: ['T 翼系统防炸线', '性价比高', '适合新手'],
+                cons: ['满载时略重', '噪音稍大']
+            },
+            {
+                id: 3,
+                name: 'Megabass VISION 110',
+                category: 'lure',
+                price: 168,
+                rating: 4.9,
+                reviews: 567,
+                image: 'from-green-300 to-green-400',
+                specs: { '类型': '米诺', '长度': '110mm', '重量': '14g', '潜深': '0.8-1.2m' },
+                scores: { 泳姿: 98, 耐用性: 85, 性价比: 70, '诱鱼效果': 96 },
+                pros: ['经典泳姿', '鲈鱼杀手', '品质稳定'],
+                cons: ['价格偏高', '容易挂底']
+            },
+            {
+                id: 4,
+                name: '海伯 战神系列',
+                category: 'rod',
+                price: 358,
+                rating: 4.5,
+                reviews: 289,
+                image: 'from-red-300 to-red-400',
+                specs: { '长度': '2.13m', '调性': 'M', '重量': '125g', '饵重': '7-28g' },
+                scores: { 灵敏度: 80, 耐用性: 92, 性价比: 95, 外观: 85 },
+                pros: ['性价比极高', '皮实耐用', '适合新手'],
+                cons: ['灵敏度一般', '重量偏大']
+            },
+            {
+                id: 5,
+                name: 'Abu Garcia REVO',
+                category: 'reel',
+                price: 1599,
+                rating: 4.8,
+                reviews: 234,
+                image: 'from-purple-300 to-purple-400',
+                specs: { '类型': '水滴轮', '速比': '7.3:1', '重量': '184g', '轴承': '10+1' },
+                scores: { 抛投性: 94, 耐用性: 93, 性价比: 72, '刹车系统': 96 },
+                pros: ['磁力刹车精准', '高速比', '做工精细'],
+                cons: ['价格高', '维护成本高']
+            },
+            {
+                id: 6,
+                name: 'OWNER 钩子套装',
+                category: 'accessory',
+                price: 89,
+                rating: 4.6,
+                reviews: 512,
+                image: 'from-yellow-300 to-yellow-400',
+                specs: { '数量': '50 枚', '型号': '混合装', '材质': '高碳钢', '涂层': '黑色' },
+                scores: { 锋利度: 94, 耐用性: 88, 性价比: 92, '防锈性': 85 },
+                pros: ['超级锋利', '性价比高', '型号齐全'],
+                cons: ['容易生锈', '小号偏软']
+            }
+        ];
+
+        let compareList = [];
+
+        function renderGear(category = 'all') {
+            const grid = document.getElementById('gearGrid');
+            const filtered = category === 'all' ? gearData : gearData.filter(g => g.category === category);
+            
+            grid.innerHTML = filtered.map(gear => `
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg gear-card">
+                    <div class="h-40 bg-gradient-to-br ${gear.image} flex items-center justify-center">
+                        <i data-lucide="package" class="w-16 h-16 text-white opacity-60"></i>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">${gear.name}</h3>
+                                <p class="text-sm text-gray-500">${getCategoryName(gear.category)}</p>
+                            </div>
+                            <button onclick="toggleCompare(${gear.id})" class="compare-btn ${compareList.includes(gear.id) ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600'} p-2 rounded-lg hover:bg-primary-100 transition">
+                                <i data-lucide="layers" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1"></i>
+                            <span class="font-medium">${gear.rating}</span>
+                            <span class="text-gray-500 text-sm ml-1">(${gear.reviews}条评价)</span>
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                            ${Object.entries(gear.scores).slice(0, 3).map(([key, value]) => `
+                                <div class="flex items-center text-sm">
+                                    <span class="text-gray-600 w-16">${key}</span>
+                                    <div class="flex-grow bg-gray-200 rounded-full h-2 ml-2">
+                                        <div class="bg-primary-500 h-2 rounded-full rating-bar" style="width: ${value}%"></div>
+                                    </div>
+                                    <span class="text-gray-700 font-medium ml-2 w-8">${value}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-3 border-t">
+                            <span class="text-2xl font-bold text-primary-600">¥${gear.price}</span>
+                            <button onclick="viewGearDetail(${gear.id})" class="bg-primary-50 hover:bg-primary-100 text-primary-600 px-4 py-2 rounded-lg font-medium transition">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        function getCategoryName(cat) {
+            return { rod: '鱼竿', reel: '鱼轮', lure: '假饵', accessory: '配件' }[cat] || cat;
+        }
+
+        function toggleCompare(id) {
+            const index = compareList.indexOf(id);
+            if (index > -1) {
+                compareList.splice(index, 1);
+            } else {
+                if (compareList.length >= 3) {
+                    alert('最多对比 3 款装备');
+                    return;
+                }
+                compareList.push(id);
+            }
+            updateCompareCount();
+            renderGear(document.querySelector('.category-btn.active').dataset.category);
+        }
+
+        function updateCompareCount() {
+            document.getElementById('compareCount').textContent = compareList.length;
+        }
+
+        function openCompare() {
+            if (compareList.length < 2) {
+                alert('请至少选择 2 款装备进行对比');
+                return;
+            }
+            const selected = gearData.filter(g => compareList.includes(g.id));
+            alert(`对比功能演示\n\n已选：${selected.map(s => s.name).join(' vs ')}\n\n完整对比表格开发中...`);
+        }
+
+        function viewGearDetail(id) {
+            const gear = gearData.find(g => g.id === id);
+            alert(`${gear.name}\n\n价格：¥${gear.price}\n评分：${gear.rating} (${gear.reviews}条评价)\n\n优点：${gear.pros.join('、')}\n缺点：${gear.cons.join('、')}`);
+        }
+
+        // 分类切换
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-primary-500', 'text-white');
+                    b.classList.add('border-2');
+                });
+                this.classList.add('active', 'bg-primary-500', 'text-white');
+                this.classList.remove('border-2');
+                renderGear(this.dataset.category);
+            });
+        });
+
+        // 初始化
+        renderGear();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
