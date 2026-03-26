@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试页面</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; }
+.card { border: 1px solid #ddd; padding: 20px; margin: 10px 0; border-radius: 8px; cursor: pointer; }
+.card:hover { background: #f0f0f0; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal.show { display: flex; align-items: center; justify-content: center; }
+.modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 500px; }
+</style>
+</head>
+<body>
+<h1>🐟 路亚钓鱼 - 功能测试</h1>
+<p>如果能看到这个页面，说明基础加载正常</p>
+
+<h2>测试 1: 点击卡片</h2>
+<div class="card" onclick="test1()">
+<strong>点击我测试 JavaScript</strong>
+<p>如果点击后弹出对话框，说明 JS 正常</p>
+</div>
+
+<h2>测试 2: 装备详情</h2>
+<div class="card" onclick="showDetail()">
+<strong>Shimano EXP 鱼竿</strong>
+<p>点击查看详情弹窗</p>
+</div>
+
+<div id="modal" class="modal" onclick="closeModal(event)">
+<div class="modal-content">
+<h2 id="title"></h2>
+<div id="content"></div>
+<button onclick="closeModal()" style="margin-top:20px;padding:10px 20px;">关闭</button>
+</div>
+</div>
+
+<script>
+console.log('JavaScript 加载成功');
+
+function test1() {
+alert('JavaScript 工作正常！\n\n如果看到这个弹窗，说明:\n1. HTML 加载正常\n2. JavaScript 执行正常\n3. 点击事件绑定正常');
+}
+
+function showDetail() {
+document.getElementById('title').innerHTML = 'Shimano EXP 鱼竿';
+document.getElementById('content').innerHTML = '<p><strong>价格:</strong> ¥1299</p><p><strong>评分:</strong> 4.8</p><p><strong>优点:</strong> 超高灵敏度，轻量化设计</p><p><strong>缺点:</strong> 价格偏高</p>';
+document.getElementById('modal').className = 'modal show';
+}
+
+function closeModal(e) {
+if (!e || e.target.className === 'modal') {
+document.getElementById('modal').className = 'modal';
+}
+}
+</script>
+</body>
+</html>
